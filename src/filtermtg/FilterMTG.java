@@ -27,8 +27,11 @@ public class FilterMTG extends Application {
 
     DirectoryChooser directoryInput;
     DirectoryChooser directoryOutput;
-    File outputDirectory;
-    File inputDirectory;
+    static File outputDirectory;
+    static File inputDirectory;
+    static File CMCFolder;
+    static String namePack = "";
+//    File image;
 
     public static void readJSON() throws Exception {
         File file = new File("card.json");
@@ -38,6 +41,8 @@ public class FilterMTG extends Application {
         JSONObject jObject = new JSONObject(content);
         jObject = new JSONObject(content.trim());
         Iterator<String> keys = jObject.keys();
+        File[] listOfFilesInput = inputDirectory.listFiles();
+        File[] listOfFilesOutput = outputDirectory.listFiles();
 
         while (keys.hasNext()) {
             String key = keys.next();
@@ -50,8 +55,50 @@ public class FilterMTG extends Application {
                 }
                 String type = aJObject.getString("type");
                 BigInteger cmc = aJObject.getBigInteger("cmc");
+                String enlargment = new String(".full.jpg");
                 if (type.contains("Creature")) {
-                    System.out.println(name + " " + cmc);
+                    if (listOfFilesOutput.length == 0) {
+                        if (listOfFilesInput.length != 0) {
+
+                            for (File lif : listOfFilesInput) {
+
+                                if (lif.getName().contentEquals(name + enlargment)) {
+                                    CMCFolder = new File(outputDirectory + "\\" + namePack + cmc.toString());
+                                    if (!CMCFolder.exists()) {
+                                        CMCFolder.mkdirs();
+                                    }
+
+                                    lif.renameTo(new File(CMCFolder + "\\" + name + ".full.jpg"));
+                                    System.out.println(name+" !!!!");
+//                                    FileUtils.copyFile(source, dest);
+                                }
+                            }
+                            listOfFilesOutput = outputDirectory.listFiles();
+                        }
+                    } else {
+                        if (listOfFilesInput.length != 0) {
+                            for (File lif : listOfFilesInput) {
+                                for (File lof : listOfFilesOutput) {
+                                    if (lof.getName().contains(lif.getName())) {
+                                        continue;
+                                    } else {
+                                        if (lif.getName().contentEquals(name + enlargment)) {
+                                           CMCFolder = new File(outputDirectory + "\\" + namePack + cmc.toString());
+                                    if (!CMCFolder.exists()) {
+                                        CMCFolder.mkdirs();
+                                    }
+
+                                    lif.renameTo(new File(CMCFolder + "\\" + name + ".full.jpg"));
+                                    System.out.println(name);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+//                    System.out.println(name + " " + cmc);
                 }
             }
         }
@@ -60,8 +107,7 @@ public class FilterMTG extends Application {
     //select folder
     @Override
     public void start(Stage primaryStage) {
-        
-        
+
         Button btn = new Button();
         btn.setText("Choose input directory");
         Button btn2 = new Button();
@@ -74,7 +120,7 @@ public class FilterMTG extends Application {
             @Override
             public void handle(ActionEvent event) {
                 directoryInput = new DirectoryChooser();
-                 inputDirectory = directoryInput.showDialog(primaryStage);
+                inputDirectory = directoryInput.showDialog(primaryStage);
 
                 if (inputDirectory == null) {
                     //No Directory selected
@@ -83,8 +129,8 @@ public class FilterMTG extends Application {
                 }
             }
         });
-        
-                btn2.setOnAction(new EventHandler<ActionEvent>() {
+
+        btn2.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
@@ -98,32 +144,32 @@ public class FilterMTG extends Application {
                 }
             }
         });
-         btn3.setOnAction(new EventHandler<ActionEvent>() {
+        btn3.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                try { 
-                    if(directoryInput==null || directoryOutput==null){
-                     Alert alert = new Alert(AlertType.ERROR);
-                     String err = new String("");
-                     if(directoryInput==null){
-                         err=err+"+No choosed input directory ";
-                     }
-                     if(directoryOutput==null){
-                         err=err+ "+No choosed output directory";
-                     }
-                     alert.setTitle("No choosed directory");
-                     alert.setHeaderText("");
-                     alert.setContentText(err);
-                     alert.showAndWait();
+                try {
+                    if (directoryInput == null || directoryOutput == null) {
+                        Alert alert = new Alert(AlertType.ERROR);
+                        String err = new String("");
+                        if (directoryInput == null) {
+                            err = err + "+No choosed input directory ";
+                        }
+                        if (directoryOutput == null) {
+                            err = err + "+No choosed output directory";
+                        }
+                        alert.setTitle("No choosed directory");
+                        alert.setHeaderText("");
+                        alert.setContentText(err);
+                        alert.showAndWait();
                     }
                     readJSON();
                 } catch (Exception ex) {
                     Logger.getLogger(FilterMTG.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        });        
-                
+        });
+
         Pane root = new Pane();
         btn.setLayoutX(10);
         btn.setLayoutY(20);
@@ -133,7 +179,7 @@ public class FilterMTG extends Application {
         btn3.setLayoutY(200);
         root.getChildren().add(btn);
         root.getChildren().add(btn2);
-         root.getChildren().add(btn3);
+        root.getChildren().add(btn3);
         Scene scene = new Scene(root, 300, 250);
 
         primaryStage.setTitle("Mtg Card Momir Selecter");
@@ -141,9 +187,8 @@ public class FilterMTG extends Application {
         primaryStage.show();
     }
 
-
     public static void main(String[] args) throws Exception {
-  
+
         launch(args);
     }
 }
