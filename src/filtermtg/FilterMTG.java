@@ -1,5 +1,7 @@
 package filtermtg;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -13,14 +15,23 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
+import javax.xml.soap.Text;
+import static marvin.MarvinPluginCollection.thresholding;
 import oracle.jrockit.jfr.parser.ChunkParser;
 import org.json.*;
 
+import marvin.MarvinDefinitions;
+
+import marvin.image.*;
+import marvin.io.MarvinImageIO;
 import org.apache.commons.io.FileUtils;
 
 public class FilterMTG extends Application {
@@ -87,9 +98,22 @@ public class FilterMTG extends Application {
                                     if (!CMCFolder.exists()) {
                                         CMCFolder.mkdirs();
                                     }
+//                                    BufferedImage IMG = ImageIO.read(lif);
+//                                    IMG= thresholdImage(IMG, 2);
+//System.out.println(lif.toString());
+//                                        MarvinImage original = MarvinImageIO.loadImage(lif.toString());                     ////to do image thresholding
+//                                            System.out.println("1");
+//                                        
+//                                        MarvinImage output = original.clone();
+//                                        System.out.println("2");
+//                                            thresholding(original, output, 180);
+//                                                    MarvinImageIO.saveImage(output, "./res/lena3_thresholding.png");
+//                                            
+
+
 
                                     lif.renameTo(new File(CMCFolder + "\\" + name + ".full.jpg"));
-                                    System.out.println(name);
+//                                    System.out.println(name);
                                         }
                                     }
                                 }
@@ -103,6 +127,23 @@ public class FilterMTG extends Application {
             }
         }
     }
+//    public static BufferedImage thresholdImage(BufferedImage image, int threshold) {
+//    BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+//    result.getGraphics().drawImage(image, 0, 0, null);
+//    WritableRaster raster = result.getRaster();
+//    int[] pixels = new int[image.getWidth()];
+//    for (int y = 0; y < image.getHeight(); y++) {
+//        raster.getPixels(0, y, image.getWidth(), 1, pixels);
+//        for (int i = 0; i < pixels.length; i++) {
+//            if (pixels[i] < threshold) pixels[i] = 0;
+//            else pixels[i] = 255;
+//        }
+//        raster.setPixels(0, y, image.getWidth(), 1, pixels);
+//    }
+//    return result;
+//}
+
+
 
     //select folder
     @Override
@@ -114,6 +155,8 @@ public class FilterMTG extends Application {
         btn2.setText("Choose output directory");
         Button btn3 = new Button();
         btn3.setText("GO!");
+        TextField txtf =new TextField();
+        txtf.setText("");
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -163,24 +206,30 @@ public class FilterMTG extends Application {
                         alert.setContentText(err);
                         alert.showAndWait();
                     }
+                    namePack=txtf.getText();
                     readJSON();
                 } catch (Exception ex) {
                     Logger.getLogger(FilterMTG.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-
+        
         Pane root = new Pane();
+       
         btn.setLayoutX(10);
         btn.setLayoutY(20);
         btn2.setLayoutX(10);
         btn2.setLayoutY(50);
-        btn3.setLayoutX(250);
-        btn3.setLayoutY(200);
+        btn3.setLayoutX(450);
+        btn3.setLayoutY(365);
+        txtf.setLayoutX(320);
+        txtf.setLayoutY(20);
+        
         root.getChildren().add(btn);
         root.getChildren().add(btn2);
         root.getChildren().add(btn3);
-        Scene scene = new Scene(root, 300, 250);
+        root.getChildren().add(txtf);
+        Scene scene = new Scene(root, 500, 400);
 
         primaryStage.setTitle("Mtg Card Momir Selecter");
         primaryStage.setScene(scene);
