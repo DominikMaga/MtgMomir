@@ -26,6 +26,9 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import javax.xml.soap.Text;
 import marvin.MarvinPluginCollection;
+import static marvin.MarvinPluginCollection.halftoneDithering;
+import static marvin.MarvinPluginCollection.halftoneErrorDiffusion;
+import static marvin.MarvinPluginCollection.halftoneRaylanders;
 import static marvin.MarvinPluginCollection.scale;
 import static marvin.MarvinPluginCollection.thresholding;
 import marvin.image.MarvinImage;
@@ -43,6 +46,7 @@ public class FilterMTG extends Application {
     static File inputDirectory;
     static File CMCFolder;
     static String namePack = "";
+    public static int program=1;
 //    File image;
 
     public static void readJSON() throws Exception {
@@ -67,7 +71,7 @@ public class FilterMTG extends Application {
                 }
                 String type = aJObject.getString("type");
                 BigInteger cmc = aJObject.getBigInteger("cmc");
-                String enlargment = new String(".full.jpg");
+                String enlargment = new String(".jpg");
                 if (type.contains("Creature")) {
                     if (listOfFilesOutput.length == 0) {
                         if (listOfFilesInput.length != 0) {
@@ -75,12 +79,9 @@ public class FilterMTG extends Application {
                             for (File lif : listOfFilesInput) {
 
                                 if (lif.getName().contentEquals(name + enlargment)) {
-                                    CMCFolder = new File(outputDirectory + "\\" + namePack + cmc.toString());
-                                    if (!CMCFolder.exists()) {
-                                        CMCFolder.mkdirs();
-                                    }
+                                    ImageFix(cmc, name, lif.toString(),program);
 
-                                    lif.renameTo(new File(CMCFolder + "\\" + name + ".full.jpg"));
+//                                    lif.renameTo(new File(CMCFolder + "\\" + name + ".jpg"));
                                     System.out.println(name + " !!!!");
 //                                    FileUtils.copyFile(source, dest);
                                 }
@@ -95,16 +96,19 @@ public class FilterMTG extends Application {
                                         continue;
                                     } else {
                                         if (lif.getName().contentEquals(name + enlargment)) {
-                                            CMCFolder = new File(outputDirectory + "\\" + namePack + cmc.toString());
-                                            if (!CMCFolder.exists()) {
-                                                CMCFolder.mkdirs();
-                                            }
-                                            MarvinImage original = MarvinImageIO.loadImage(lif.toString());
-                                            MarvinImage output = original.clone();
-                                            scale(original, output, 384);
-                                            thresholding( output, output,150);
-                                            
-                                            MarvinImageIO.saveImage(output, CMCFolder + "/" + name + ".full.png");
+
+                                            ImageFix(cmc, name, lif.toString(),program);
+
+//                                            CMCFolder = new File(outputDirectory + "\\" + namePack + cmc.toString());
+//                                            if (!CMCFolder.exists()) {
+//                                                CMCFolder.mkdirs();
+//                                            }
+//                                            MarvinImage original = MarvinImageIO.loadImage(lif.toString());
+//                                            MarvinImage output = original.clone();
+//                                            scale(original, output, 384);
+//                                            thresholding( output, output,110);
+//                                            
+//                                            MarvinImageIO.saveImage(output, CMCFolder + "/" + name + ".full.png");
 //                                            
 //                                    lif.renameTo(new File(CMCFolder + "\\" + name + ".full.jpg"));
 //                                    System.out.println(name);
@@ -119,17 +123,45 @@ public class FilterMTG extends Application {
                 }
             }
         }
-        
-        
-                        Alert alert = new Alert(AlertType.INFORMATION);
 
-                        alert.setTitle("Succes");
-                        alert.setHeaderText("");
-                        alert.setContentText("Done!");
-                        alert.showAndWait();
-        
-        
-        
+        Alert alert = new Alert(AlertType.INFORMATION);
+
+        alert.setTitle("Succes");
+        alert.setHeaderText("");
+        alert.setContentText("Done!");
+        alert.showAndWait();
+
+    }
+
+    public static void ImageFix(BigInteger cmc, String name, String path, int program) {
+        CMCFolder = new File(outputDirectory + "\\" + namePack + cmc.toString());
+        if (!CMCFolder.exists()) {
+            CMCFolder.mkdirs();
+        }
+        MarvinImage original = MarvinImageIO.loadImage(path);
+        MarvinImage output = original.clone();
+        scale(original, output, 384);
+        switch (program) {
+            case 1:
+                thresholding(output, output, 110);
+                break;
+            case 2:
+                halftoneRaylanders(output, output);
+                break;
+            case 3:
+                halftoneErrorDiffusion(output, output);
+                break;
+            case 4:
+                halftoneDithering(output, output);
+                break;
+
+        }
+//        thresholding(output, output, 110);
+//        halftoneRaylanders(output, output);
+//        halftoneErrorDiffusion(output, output);
+//        halftoneDithering(output, output);
+
+        MarvinImageIO.saveImage(output, CMCFolder + "/" + name + ".bmps");
     }
 //    public static BufferedImage thresholdImage(BufferedImage image, int threshold) {
 //    BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
