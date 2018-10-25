@@ -1,5 +1,6 @@
 package filtermtg;
 
+import com.sun.media.sound.ModelStandardTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -24,15 +25,15 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import javax.xml.soap.Text;
+import marvin.MarvinPluginCollection;
+import static marvin.MarvinPluginCollection.scale;
 import static marvin.MarvinPluginCollection.thresholding;
-import oracle.jrockit.jfr.parser.ChunkParser;
-import org.json.*;
-
-import marvin.MarvinDefinitions;
-
-import marvin.image.*;
+import marvin.image.MarvinImage;
 import marvin.io.MarvinImageIO;
+import oracle.jrockit.jfr.parser.ChunkParser;
 import org.apache.commons.io.FileUtils;
+import org.json.*;
+import sun.awt.image.ImagingLib;
 
 public class FilterMTG extends Application {
 
@@ -80,7 +81,7 @@ public class FilterMTG extends Application {
                                     }
 
                                     lif.renameTo(new File(CMCFolder + "\\" + name + ".full.jpg"));
-                                    System.out.println(name+" !!!!");
+                                    System.out.println(name + " !!!!");
 //                                    FileUtils.copyFile(source, dest);
                                 }
                             }
@@ -94,25 +95,18 @@ public class FilterMTG extends Application {
                                         continue;
                                     } else {
                                         if (lif.getName().contentEquals(name + enlargment)) {
-                                           CMCFolder = new File(outputDirectory + "\\" + namePack + cmc.toString());
-                                    if (!CMCFolder.exists()) {
-                                        CMCFolder.mkdirs();
-                                    }
-//                                    BufferedImage IMG = ImageIO.read(lif);
-//                                    IMG= thresholdImage(IMG, 2);
-//System.out.println(lif.toString());
-//                                        MarvinImage original = MarvinImageIO.loadImage(lif.toString());                     ////to do image thresholding
-//                                            System.out.println("1");
-//                                        
-//                                        MarvinImage output = original.clone();
-//                                        System.out.println("2");
-//                                            thresholding(original, output, 180);
-//                                                    MarvinImageIO.saveImage(output, "./res/lena3_thresholding.png");
+                                            CMCFolder = new File(outputDirectory + "\\" + namePack + cmc.toString());
+                                            if (!CMCFolder.exists()) {
+                                                CMCFolder.mkdirs();
+                                            }
+                                            MarvinImage original = MarvinImageIO.loadImage(lif.toString());
+                                            MarvinImage output = original.clone();
+                                            scale(original, output, 384);
+                                            thresholding( output, output,150);
+                                            
+                                            MarvinImageIO.saveImage(output, CMCFolder + "/" + name + ".full.png");
 //                                            
-
-
-
-                                    lif.renameTo(new File(CMCFolder + "\\" + name + ".full.jpg"));
+//                                    lif.renameTo(new File(CMCFolder + "\\" + name + ".full.jpg"));
 //                                    System.out.println(name);
                                         }
                                     }
@@ -122,10 +116,20 @@ public class FilterMTG extends Application {
                         }
 
                     }
-//                    System.out.println(name + " " + cmc);
                 }
             }
         }
+        
+        
+                        Alert alert = new Alert(AlertType.INFORMATION);
+
+                        alert.setTitle("Succes");
+                        alert.setHeaderText("");
+                        alert.setContentText("Done!");
+                        alert.showAndWait();
+        
+        
+        
     }
 //    public static BufferedImage thresholdImage(BufferedImage image, int threshold) {
 //    BufferedImage result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
@@ -143,8 +147,6 @@ public class FilterMTG extends Application {
 //    return result;
 //}
 
-
-
     //select folder
     @Override
     public void start(Stage primaryStage) {
@@ -155,7 +157,7 @@ public class FilterMTG extends Application {
         btn2.setText("Choose output directory");
         Button btn3 = new Button();
         btn3.setText("GO!");
-        TextField txtf =new TextField();
+        TextField txtf = new TextField();
         txtf.setText("");
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -206,16 +208,16 @@ public class FilterMTG extends Application {
                         alert.setContentText(err);
                         alert.showAndWait();
                     }
-                    namePack=txtf.getText();
+                    namePack = txtf.getText();
                     readJSON();
                 } catch (Exception ex) {
                     Logger.getLogger(FilterMTG.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        
+
         Pane root = new Pane();
-       
+
         btn.setLayoutX(10);
         btn.setLayoutY(20);
         btn2.setLayoutX(10);
@@ -224,7 +226,7 @@ public class FilterMTG extends Application {
         btn3.setLayoutY(365);
         txtf.setLayoutX(320);
         txtf.setLayoutY(20);
-        
+
         root.getChildren().add(btn);
         root.getChildren().add(btn2);
         root.getChildren().add(btn3);
