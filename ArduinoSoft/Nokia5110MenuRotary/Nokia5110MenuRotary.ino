@@ -65,9 +65,9 @@ void loop() {
         break;
     }
   }
-  if (down && page == 1 ) {
+  if (up && page == 1 ) {
     // Początek przesówania menu w dół
-    down = false;
+    up = false;
     if (menuHighlight[0] && !menuHighlight[1]) {
       menuHighlight[0] = false;
       menuHighlight[1] = true;
@@ -91,18 +91,18 @@ void loop() {
         volume--;
         break;
       case 2:
-        selectedLanguage--;
-        resetValuesLess(selectedLanguage, 0, 2);
+//        selectedLanguage--;
+        selectedLanguage=resetValuesLess(selectedLanguage, 0, 2);
         break;
       case 3:
-        selectedDifficulty--;
-        resetValuesLess(selectedDifficulty, 0, 1);
+//        selectedDifficulty--;
+        selectedDifficulty=resetValuesLess(selectedDifficulty, 0, 1);
         break;
     }
   }
-  if (up && page == 1)                     // Obsługa przesówania menu w górę
+  if (down && page == 1)                     // Obsługa przesówania menu w górę
   {
-    up = false;
+    down = false;
     if (!menuHighlight[1] && menuHighlight[2]) {
       menuHighlight[2] = false;
       menuHighlight[1] = true;
@@ -116,7 +116,7 @@ void loop() {
       m = resetValuesLess(m, 0, (sizeof(menuItem)/6));
       n = resetValuesLess(n, 0, (sizeof(menuItem)/6));
     }
-  } else if (down && page == 2) {            //kontorla dodawania wartości przez encoder w podmenu
+  } else if (down && page == 2) {            //kontorla odejmowania wartości przez encoder w podmenu
     down = false;
     switch (getMenuItem()) {
       case 0:
@@ -126,12 +126,12 @@ void loop() {
         volume++;
         break;
       case 2:
-        selectedLanguage++;
-        resetValuesMore(selectedLanguage, 0, 2);
+//        selectedLanguage++;
+        selectedLanguage=resetValuesMore(selectedLanguage, 0, 2);
         break;
       case 3:
-        selectedDifficulty++;
-        resetValuesMore(selectedDifficulty, 0, 1);
+//        selectedDifficulty++;
+        selectedDifficulty=resetValuesMore(selectedDifficulty, 0, 1);
         break;
     }
   }
