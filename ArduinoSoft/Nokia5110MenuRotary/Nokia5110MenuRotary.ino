@@ -16,7 +16,7 @@ int fontPos2 = 16;
 int fontPos3 = 24;
 int l = 0, m = 1, n = 2; //zmienne potrzebne do ustalenia wyświetlania przedmiotów w menu
 
-String menuItem[6] = {"Momir", "Standard", "cba", "bcbv", "bcc", "dbcv"};        // lista przedmiotow w menu
+String menuItem[6] = {"Contrast", "Volmue", "Language", "Difficulty", "Light: ON", "Reset"};        // lista przedmiotow w menu
 
 bool menuHighlight[3] = { 1, 0, 0 };
 boolean backlight = true;
@@ -65,8 +65,36 @@ void loop() {
         break;
     }
   }
-  if (down && page == 1 ) {
-    // Początek przesówania menu w dół
+
+  if (middle) //Middle Button is Pressed               /wcisniecie przycisku enkodera
+  {
+    middle = false;
+    if (page == 1) {
+      switch (getMenuItem()) {
+        case 4:
+          if (backlight) {
+            Serial.println();
+            backlight = false;
+            setMenuItem("Light: ON");
+            //+ ew. jakas metoda
+          } else {
+            backlight = true;
+            setMenuItem("Light: OFF");
+          }
+          break;
+        case 5:
+          resetDefaults();
+          break;
+        default:
+          page = 2;
+          break;
+      }
+    } else if (page == 2) {
+      page = 1;
+    }
+  }
+
+  if (down && page == 1 ) {    // Początek przesuwania menu w dół
     down = false;
     if (menuHighlight[0] && !menuHighlight[1]) {
       menuHighlight[0] = false;
@@ -100,7 +128,7 @@ void loop() {
         break;
     }
   }
-  if (up && page == 1)                     // Obsługa przesówania menu w górę
+  if (up && page == 1)                     // Obsługa przesuwania menu w górę
   {
     up = false;
     if (!menuHighlight[1] && menuHighlight[2]) {
@@ -136,32 +164,7 @@ void loop() {
     }
   }
 
-  if (middle) //Middle Button is Pressed               /wcisniecie przycisku enkodera
-  {
-    middle = false;
-    if (page == 1) {
-      switch (getMenuItem()) {
-        case 4:
-          if (backlight) {
-            backlight = false;
-            setMenuItem("Light: ON");
-            //+ ew. jakas metoda
-          } else {
-            backlight = true;
-            setMenuItem("Light: OFF");
-          }
-          break;
-        case 5:
-          resetDefaults();
-          break;
-        default:
-          page = 2;
-          break;
-      }
-    } else if (page == 2) {
-      page = 1;
-    }
-  }
+
 }
 void drawMenu() {
   display.setTextSize(1);                   //  ustawienie wyglądu głównego menu
@@ -267,11 +270,11 @@ void readRotaryEncoder()          // ustalenie w ktora strone obraca się encode
   if (value / 2 > last) {
     last = value / 2;
     down = true;
-    delay(150);
+    delay(500);
   } else   if (value / 2 < last) {
     last = value / 2;
     up = true;
-    delay(150);
+    delay(500);
   }
 }
 void setMenuItem(String a) {        // zmienia nazwe przedmiotu w menu
