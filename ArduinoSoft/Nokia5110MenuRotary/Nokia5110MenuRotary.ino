@@ -175,7 +175,6 @@ void drawMenu() {
     displayMenuItem(menuItem[l], fontPos1, menuHighlight[0]);
     displayMenuItem(menuItem[m], fontPos2, menuHighlight[1]);
     displayMenuItem(menuItem[n], fontPos3, menuHighlight[2]);
-    display.display();
     Serial.println(page);
   } else if (page == 2) {
     switch (getMenuItem()) {
@@ -193,6 +192,7 @@ void drawMenu() {
         break;
     }
   }
+  display.display();
 }
 
 void resetDefaults()            // przywrócenie wartosci domyslnych (raczej nie potrzebne)
@@ -241,7 +241,7 @@ void displayStringMenuPage(String menuItem, String value)     // menu do kontrol
   display.setCursor(5, 15);
   display.print("Value");
   display.setTextSize(2);
-  display.setCursor(5, 25);
+  display.setCursor(40, 8);
   display.print(value);
   display.setTextSize(2);
   display.display();
