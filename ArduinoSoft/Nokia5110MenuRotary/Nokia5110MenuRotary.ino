@@ -2,7 +2,7 @@
             ##<><><><><><><><><><><><><><><><><><><><><>##
              +       Arduino Rotary Encoder Menu         +
              +                 v2.0                      +
-             +           by Dominik Maga                 + 
+             +           by Dominik Maga                 +
             ##<><><><><><><><><><><><><><><><><><><><><>##
 */
 #include <Adafruit_GFX.h>
@@ -40,7 +40,7 @@ int16_t last, value;
 Adafruit_SSD1306 display(OLED_RESET);
 
 void setup() {
-
+  Serial.begin(9600);
   encoder = new ClickEncoder( A1, A0, A2);
   encoder->setAccelerationEnabled(false);
 
@@ -75,7 +75,8 @@ void loop() {
     else if (menuHighlight[1] && !menuHighlight[2]) {
       menuHighlight[1] = false;
       menuHighlight[2] = true;
-    }else if(menuHighlight[2] && !menuHighlight[1] && !menuHighlight[0]){                           //tego brakowało tu był błąd
+    }
+    else if(menuHighlight[2] && !menuHighlight[1] && !menuHighlight[0]){                           //tego brakowało tu był błąd
       l = resetValuesMore(l, 0, (sizeof(menuItem)/6));
       m = resetValuesMore(m, 0, (sizeof(menuItem)/6));
       n = resetValuesMore(n, 0, (sizeof(menuItem)/6));
@@ -109,7 +110,8 @@ void loop() {
     else if (!menuHighlight[0] && menuHighlight[1]) {
       menuHighlight[1] = false;
       menuHighlight[0] = true;
-    }else if (menuHighlight[0] && !menuHighlight[1] && !menuHighlight[2]){
+    }
+    else if (menuHighlight[0] && !menuHighlight[1] && !menuHighlight[2]){
       l = resetValuesLess(l, 0, (sizeof(menuItem)/6));
       m = resetValuesLess(m, 0, (sizeof(menuItem)/6));
       n = resetValuesLess(n, 0, (sizeof(menuItem)/6));
@@ -174,6 +176,7 @@ void drawMenu() {
     displayMenuItem(menuItem[m], fontPos2, menuHighlight[1]);
     displayMenuItem(menuItem[n], fontPos3, menuHighlight[2]);
     display.display();
+    Serial.println(page);
   } else if (page == 2) {
     switch (getMenuItem()) {
       case 0:
@@ -244,7 +247,7 @@ void displayStringMenuPage(String menuItem, String value)     // menu do kontrol
   display.display();
 }
 
-void displayMenuItem(String item, int position, boolean selected)   //potrzebne do rysowania elemnetów menu
+void displayMenuItem(String item, int position, bool selected)   //potrzebne do rysowania elemnetów menu
 {
   if (selected)
   {
@@ -311,6 +314,3 @@ int resetValuesLess(int i, int MinValue, int MaxValue) {  // przekręcenie liczn
   }
   return i;
 }
-
-
-
