@@ -77,9 +77,9 @@ void loop() {
       menuHighlight[2] = true;
     }
     else if(menuHighlight[2] && !menuHighlight[1] && !menuHighlight[0]){                           //tego brakowało tu był błąd
-      l = resetValuesMore(l, 0, (sizeof(menuItem)/6));
-      m = resetValuesMore(m, 0, (sizeof(menuItem)/6));
-      n = resetValuesMore(n, 0, (sizeof(menuItem)/6));
+      l = resetValuesMore(l, 0, (sizeof(menuItem)/6)-1);
+      m = resetValuesMore(m, 0, (sizeof(menuItem)/6)-1);
+      n = resetValuesMore(n, 0, (sizeof(menuItem)/6)-1);
     }
   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
     up = false;
@@ -112,9 +112,9 @@ void loop() {
       menuHighlight[0] = true;
     }
     else if (menuHighlight[0] && !menuHighlight[1] && !menuHighlight[2]){
-      l = resetValuesLess(l, 0, (sizeof(menuItem)/6));
-      m = resetValuesLess(m, 0, (sizeof(menuItem)/6));
-      n = resetValuesLess(n, 0, (sizeof(menuItem)/6));
+      l = resetValuesLess(l, 0, (sizeof(menuItem)/6)-1);
+      m = resetValuesLess(m, 0, (sizeof(menuItem)/6)-1);
+      n = resetValuesLess(n, 0, (sizeof(menuItem)/6)-1);
     }
   } else if (down && page == 2) {            //kontorla odejmowania wartości przez encoder w podmenu
     down = false;
