@@ -90,7 +90,7 @@ void loop() {
 
 
 
-  
+
     if (menuHighlight[0] && !menuHighlight[1]) {
       menuHighlight[0] = false;
       menuHighlight[1] = true;
@@ -98,31 +98,32 @@ void loop() {
     else if (menuHighlight[1] && !menuHighlight[2]) {
       menuHighlight[1] = false;
       menuHighlight[2] = true;
-      l = resetValuesMore(l,,0,sizeof(menuItem));
-      m = resetValuesMore(m,0,sizeof(menuItem));
-      n = resetValuesMore(n,0,sizeof(menuItem));
-    }  
+      l = resetValuesMore(l, , 0, sizeof(menuItem));
+      m = resetValuesMore(m, 0, sizeof(menuItem));
+      n = resetValuesMore(n, 0, sizeof(menuItem));
+    }
 
 
   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
     up = false;
-    switch(readMenuItem()){
+    switch (getMenuItem()) {
       case 1:
-     contast--;
-     break;
-     case 2:
-     volume--;
-     break;
-     case 3:
-     selectedLanguage--;
-     resetValuesLess(selectedLagnguage,0,2);
-     break;
-     case 4:
-      selectedDifficulty--;
-     resetValuesLess(selectedDifficulty,0,1);
-     break;
+        contast--;
+        break;
+      case 2:
+        volume--;
+        break;
+      case 3:
+        selectedLanguage--;
+        resetValuesLess(selectedLagnguage, 0, 2);
+        break;
+      case 4:
+        selectedDifficulty--;
+        resetValuesLess(selectedDifficulty, 0, 1);
+        break;
 
     }
+  }
 
 
   if (down && page == 1)                     // Obsługa przesówania menu w górę
@@ -138,97 +139,71 @@ void loop() {
     else if (!menuHighlight[0] && menuHighlight[1]) {
       menuHighlight[1] = false;
       menuHighlight[0] = true;
-      l = resetValuesLess(l,0,sizeof(menuItem));
-      m = resetValuesLess(m,0,sizeof(menuItem));
-      n = resetValuesLess(n,0,sizeof(menuItem));
-    }  
+      l = resetValuesLess(l, 1, sizeof(menuItem));
+      m = resetValuesLess(m, 1, sizeof(menuItem));
+      n = resetValuesLess(n, 1, sizeof(menuItem));
+    }
 
 
 
-          // obsługa odejmowania wartości w innych elementach w menu -- trzeba przerobić na bardziej dynamiczne
+    // obsługa odejmowania wartości w innych elementach w menu -- trzeba przerobić na bardziej dynamiczne
 
-   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
+  } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
     up = false;
-    switch(readMenuItem()){
+    switch (getMenuItem()) {
       case 1:
-     contast++;
-     break;
-     case 2:
-     volume++;
-     break;
-     case 3:
-     selectedLanguage++;
-     resetValuesMore(selectedLagnguage,0,2);
-     break;
-     case 4:
-      selectedDifficulty--;
-     resetValuesMore(selectedDifficulty,0,1);
-     break;
+        contast++;
+        break;
+      case 2:
+        volume++;
+        break;
+      case 3:
+        selectedLanguage++;
+        resetValuesMore(selectedLagnguage, 0, 2);
+        break;
+      case 4:
+        selectedDifficulty++;
+        resetValuesMore(selectedDifficulty, 0, 1);
+        break;
 
     }
 
-          
-  } else if (down && page == 2 && menuitem == 1) {      
-    down = false;
-    contrast++;
-    //    setContrast();
   }
-  else if (down && page == 2 && menuitem == 2) {
-    down = false;
-    volume++;
-  }
-  else if (down && page == 2 && menuitem == 3 ) {
-    down = false;
-    selectedLanguage++;
-    if (selectedLanguage == 3)
-    {
-      selectedLanguage = 0;
-    }
-  }
-  else if (down && page == 2 && menuitem == 4 ) {
-    down = false;
-    selectedDifficulty++;
-    if (selectedDifficulty == 2)
-    {
-      selectedDifficulty = 0;
-    }
-  }
+
 
   if (middle) //Middle Button is Pressed               /wcisniecie przycisku enkodera
   {
     middle = false;
-
-    if (page == 1 && menuitem == 5) // Backlight Control   //kontrola elementów z poziomu menu
-    {
-      if (backlight)
-      {
-        backlight = false;
-        menuItem5 = "Light: OFF";
-        turnBacklightOff();
+    if (page == 1) {
+      switch (getMenuItem()) {
+        case 5:
+          if (backlight) {
+            backlight = false;
+            setMenuItem("Light: ON");
+            //+ ew. jakas metoda
+          } else {
+            backlight = true;
+            setMenuItem("Light: OFF");
+          }
+          break;
+        case 6:
+          resetDefaults();
+          break;
+        default:
+          page = 2
+                 break;
       }
-      else
-      {
-        backlight = true;
-        menuItem5 = "Light: ON";
-        turnBacklightOn();
-      }
-    }
-
-    if (page == 1 && menuitem == 6) // Reset elementow z poziomu glownego menu
-    {
-      resetDefaults();
-    }
-
-
-    else if (page == 1 && menuitem <= 4) {   // wejście w podmenu
-      page = 2;
-    }
-    else if (page == 2)         // powrot do gl menu
-    {
+    } else if (page == 2) {
       page = 1;
     }
   }
 }
+
+
+//kontrola elementów z poziomu menu
+
+}
+
 //////////////////////////////////////////////////Moje
 
 
@@ -241,42 +216,27 @@ void drawMenu_2() {
 
 
 
-
+  //if(page=1){
   //display ( item , rozmiar czcionki , podświetlenie )
   displayMenuItem(menuItem[i], fontPos1, menuHighlight[0]);
   displayMenuItem(menuItem[j], fontPos2, menuHighlight[1]);
   displayMenuItem(menuItem[k], fontPos3, menuHighlight[2]);
   display.display();
-
-
-  
-}
-
-void drawMenu()
-{
-
-  if (page == 2 && menuitem == 1)                            // wczytanie odpowiedniego page z odpowiednią zmienną
-  {
-    displayIntMenuPage(menuItem[0], contrast);
+  //} else if(page ==2){
+  switch (getMenuItem()) {
+    case 1:
+      displayIntMenuPage(menuItem[0], contrast);
+      break;
+    case 2:
+      displayIntMenuPage(menuItem[1], volume);
+      break;
+    case 3:
+      displayStringMenuPage(menuItem[2], language[selectedLanguage]);
+      break;
+    case 4:
+      displayStringMenuPage(menuItem[2], difficulty[selectedDifficulty]);
+      break;
   }
-
-  else if (page == 2 && menuitem == 2)
-  {
-    displayIntMenuPage(menuItem[1], volume);
-  }
-  else if (page == 2 && menuitem == 3)
-  {
-    displayStringMenuPage(menuItem[2], language[selectedLanguage]);
-  }
-  else if (page == 2 && menuitem == 4)
-  {
-    displayStringMenuPage(menuItem[3], difficulty[selectedDifficulty]);
-  }
-  else if (page == 2 && menuitem == 4)
-  {
-    displayStringMenuPage(menuItem[5], difficulty[selectedDifficulty]);
-  }
-
 }
 
 void resetDefaults()            // przywrócenie wartosci domyslnych (raczej nie potrzebne)
@@ -288,21 +248,12 @@ void resetDefaults()            // przywrócenie wartosci domyslnych (raczej nie
   //    setContrast();
   backlight = true;
   //    menuItem5 = "Light: ON";
-  turnBacklightOn();
+  //  turnBacklightOn();
 }
 
 
-void turnBacklightOn()
-{
-  digitalWrite(7, LOW);
-}
 
-void turnBacklightOff()
-{
-  digitalWrite(7, HIGH);
-}
-
-void timerIsr() {
+void timerIsr() {                     ////idk chyba potrzebne////
   encoder->service();
 }
 
@@ -350,7 +301,7 @@ void displayMenuItem(String item, int position, boolean selected)   //potrzebne 
     display.setTextColor(WHITE, BLACK);
   }
   display.setCursor(0, position);
-  display.print("> " + item);
+  display.print("•" + item);
 }
 
 void readRotaryEncoder()          // ustalenie w ktora strone obraca się encoder
@@ -367,19 +318,32 @@ void readRotaryEncoder()          // ustalenie w ktora strone obraca się encode
     delay(150);
   }
 }
-int readMenuItem(){
-  if (menuHighlight[0]){
+void setMenuItem(string a) {
+
+  if (menuHighlight[0] {
+  menuItem[l] = a;
+  }
+  if (menuHighlight[1] {
+  menuItem[m] = a;
+  }
+  if (menuHighlight[2] {
+  menuItem[n] = a;
+  }
+
+}
+int getMenuItem() {
+  if (menuHighlight[0]) {
     return l;
   }
-  if (menuHighlight[1]){
+  if (menuHighlight[1]) {
     retrun m;
   }
-  if (menuHighlight[2]){
+  if (menuHighlight[2]) {
     return n;
   }
 
 }
-int resetValuesMore(int i,int MinValue, int MaxValue) { //przekręcenie licznika w górę
+int resetValuesMore(int i, int MinValue, int MaxValue) { //przekręcenie licznika w górę
   i += 1;
   if (i > MaxValue ) {  ///sizeof(menuItem)
     i = MinValue;
