@@ -13,13 +13,14 @@
 int menuItemsNum = 6;  //number of items in menu
 
 int menuitem = 1;
-int frame = 1;
-int page = 1;
+//int frame = 1;
+int page = 1; // dodać więcej page 2,3,4,5 itd dla każdego nowego typu okna
 int lastMenuItem = 1;
 int fontPos1 = 8;
 int fontPos2 = 16;
 int fontPos3 = 24;
-int i = 1, j = 2, k = 3; //variables for changing menuItem
+int l = 1, m = 2, n = 3; //variables for changing menuItem
+
 
 //listed menu items
 char *menuItem[6] = {"Momir", "Standard", "a", "b", "c", "d"};
@@ -30,6 +31,7 @@ char *menuItem[6] = {"Momir", "Standard", "a", "b", "c", "d"};
 //strcpy(menuItem[5], "!??!??");
 //strcpy(menuItem[6], "?!?!?!");
 
+bool menuHighlight[3] = { 1, 0, 0 };
 boolean backlight = true;
 int contrast = 60;
 int volume = 50;
@@ -50,8 +52,6 @@ int16_t last, value;
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
 
-//Adafruit_PCD8544 display = Adafruit_SSD1306( 5, 4, 3); //Download the latest Adafruit Library in order to use this constructor
-
 void setup() {
 
   pinMode(7, OUTPUT);
@@ -62,7 +62,6 @@ void setup() {
 
   display.begin();
   display.clearDisplay();
-  //setContrast();
 
   Timer1.initialize(1000);
   Timer1.attachInterrupt(timerIsr);
@@ -86,37 +85,37 @@ void loop() {
   }
 
   if (up && page == 1 ) {
-
+    // Początek przesówania menu w dół?
     up = false;
-    if (menuitem == 2 && frame == 2)
-    {
-      frame--;
+
+
+
+  
+    if (menuHighlight[0] && !menuHighlight[1]) {
+      menuHighlight[0] = false;
+      menuHighlight[1] = true;
+    }
+    else if (menuHighlight[1] && !menuHighlight[2]) {
+      menuHighlight[1] = false;
+      menuHighlight[2] = true;
+      l = resetMenuValuesMore(l);
+      m = resetMenuValuesMore(m);
+      n = resetMenuValuesMore(n);
+    }  
+
+
+  } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
+    up = false;
+    switch(readMenuItem){
+      case 1:
+     contast--;
     }
 
-    if (menuitem == 4 && frame == 4)
-    {
-      frame--;
-    }
-    if (menuitem == 3 && frame == 3)
-    {
-      frame--;
-    }
-    lastMenuItem = menuitem;
-    menuitem--;
-    if (menuitem == 0)
-    {
-      menuitem = 1;
-    }
-  } else if (up && page == 2 && menuitem == 1 ) {
-    up = false;
-    contrast--;
-    //    setContrast();
-  }
-  else if (up && page == 2 && menuitem == 2 ) {
+  else if (up && page == 2 && readMenuItem== 2 ) {
     up = false;
     volume--;
   }
-  else if (up && page == 2 && menuitem == 3 ) {
+  else if (up && page == 2 && readMenuItem== 3 ) {
     up = false;
     selectedLanguage--;
     if (selectedLanguage == -1)
@@ -133,29 +132,29 @@ void loop() {
     }
   }
 
-  if (down && page == 1) //We have turned the Rotary Encoder Clockwise
+  if (down && page == 1)                     // Obsługa przesówania menu w górę
   {
 
     down = false;
-    if (menuitem == 3 && lastMenuItem == 2)
-    {
-      frame ++;
-    } else  if (menuitem == 4 && lastMenuItem == 3)
-    {
-      frame ++;
-    }
-    else  if (menuitem == 5 && lastMenuItem == 4 && frame != 4)
-    {
-      frame ++;
-    }
-    lastMenuItem = menuitem;
-    menuitem++;
-    if (menuitem == 7)
-    {
-      menuitem--;
+
+    if (!menuHighlight[1] && menuHighlight[2]) {
+      menuHighlight[2] = false;
+      menuHighlight[1] = true;
     }
 
-  } else if (down && page == 2 && menuitem == 1) {
+    else if (!menuHighlight[0] && menuHighlight[1]) {
+      menuHighlight[1] = false;
+      menuHighlight[0] = true;
+      i = resetMenuValuesLess(i);
+      j = resetMenuValuesLess(j);
+      k = resetMenuValuesLess(k);
+    }  
+
+
+
+          // obsługa odejmowania wartości w innych elementach w menu -- trzeba przerobić na bardziej dynamiczne
+          
+  } else if (down && page == 2 && menuitem == 1) {      
     down = false;
     contrast++;
     //    setContrast();
@@ -181,11 +180,11 @@ void loop() {
     }
   }
 
-  if (middle) //Middle Button is Pressed
+  if (middle) //Middle Button is Pressed               /wcisniecie przycisku enkodera
   {
     middle = false;
 
-    if (page == 1 && menuitem == 5) // Backlight Control
+    if (page == 1 && menuitem == 5) // Backlight Control   //kontrola elementów z poziomu menu
     {
       if (backlight)
       {
@@ -201,92 +200,62 @@ void loop() {
       }
     }
 
-    if (page == 1 && menuitem == 6) // Reset
+    if (page == 1 && menuitem == 6) // Reset elementow z poziomu glownego menu
     {
       resetDefaults();
     }
 
 
-    else if (page == 1 && menuitem <= 4) {
+    else if (page == 1 && menuitem <= 4) {   // wejście w podmenu
       page = 2;
     }
-    else if (page == 2)
+    else if (page == 2)         // powrot do gl menu
     {
       page = 1;
     }
   }
 }
+//////////////////////////////////////////////////Moje
 
-int resetMenuValuesMore(int i) {
+int resetMenuValuesMore(int i, int MaxValue) { //przekręcenie licznika w górę
   i += 1;
-  if (i > sizeof(menuItem)) {
+  if (i > MaxValue ) {  ///sizeof(menuItem)
     i = 1;
   }
   return i;
 }
 
-int resetMenuValuesLess(int i) {
+int resetMenuValuesLess(int i, int MaxValue) {  // przekręcenie licznika w dół
   i -= 1;
-  if (i < sizeof(menuItem)) {
-    i = sizeof(menuItem);
+  if (i < 1) { //sizeof(menuItem)
+    i = MaxValue;
   }
   return i;
 }
 void drawMenu_2() {
-  display.setTextSize(1);
+  display.setTextSize(1);                     ustawienie wyglądu głównego menu
   display.clearDisplay();
   display.setTextColor(WHITE, BLACK);
   display.setCursor(32, 0);
   display.print("MtG: Momir");
 
-  bool menuHighlight1 = true;
-  bool menuHighlight2 = false;
-  bool menuHighlight3 = false;
 
-  bool menuHighlight[3] = { 1, 0, 0 };
 
-  if (up) {
-    if (menuHighlight[0] && !menuHighlight[1]) {
-      menuHighlight[0] = false;
-      menuHighlight[1] = true;
-    }
-    else if (menuHighlight[1] && !menuHighlight[2]) {
-      menuHighlight[1] = false;
-      menuHighlight[2] = true;
-      i = resetMenuValuesMore(i);
-      j = resetMenuValuesMore(j);
-      k = resetMenuValuesMore(k);
-    }
-    menuitem+=1;
-  }
-
-  if (down) {
-    if (!menuHighlight[1] && menuHighlight[2]) {
-      menuHighlight[2] = false;
-      menuHighlight[1] = true;
-    }
-
-    else if (!menuHighlight[0] && menuHighlight[1]) {
-      menuHighlight[1] = false;
-      menuHighlight[0] = true;
-      i = resetMenuValuesLess(i);
-      j = resetMenuValuesLess(j);
-      k = resetMenuValuesLess(k);
-    }
-    menuitem-=1;
-  }
 
   //display ( item , rozmiar czcionki , podświetlenie )
   displayMenuItem(menuItem[i], fontPos1, menuHighlight[0]);
   displayMenuItem(menuItem[j], fontPos2, menuHighlight[1]);
   displayMenuItem(menuItem[k], fontPos3, menuHighlight[2]);
   display.display();
+
+
+  
 }
 
 void drawMenu()
 {
 
-  if (page == 2 && menuitem == 1)
+  if (page == 2 && menuitem == 1)                            // wczytanie odpowiedniego page z odpowiednią zmienną
   {
     displayIntMenuPage(menuItem[0], contrast);
   }
@@ -310,7 +279,7 @@ void drawMenu()
 
 }
 
-void resetDefaults()
+void resetDefaults()            // przywrócenie wartosci domyslnych (raczej nie potrzebne)
 {
   contrast = 60;
   volume = 50;
@@ -322,12 +291,7 @@ void resetDefaults()
   turnBacklightOn();
 }
 
-/*  void setContrast()
-  {
-    display.setContrast(contrast);
-    display.display();
-  }
-*/
+
 void turnBacklightOn()
 {
   digitalWrite(7, LOW);
@@ -342,7 +306,7 @@ void timerIsr() {
   encoder->service();
 }
 
-void displayIntMenuPage(String menuItem, int value)
+void displayIntMenuPage(String menuItem, int value)  ///menu dla kontroli intow
 {
   display.setTextSize(1);
   display.clearDisplay();
@@ -351,7 +315,7 @@ void displayIntMenuPage(String menuItem, int value)
   display.print(menuItem);
   display.drawFastHLine(0, 10, 83, BLACK);
   display.setCursor(5, 8);
-  display.print("Mana cost");
+  display.print("Value");
   display.setTextSize(2);
   display.setCursor(40, 8);
   display.print(value);
@@ -359,7 +323,7 @@ void displayIntMenuPage(String menuItem, int value)
   display.display();
 }
 
-void displayStringMenuPage(String menuItem, String value)
+void displayStringMenuPage(String menuItem, String value)     // menu do kontroli stringow
 {
   display.setTextSize(1);
   display.clearDisplay();
@@ -376,7 +340,7 @@ void displayStringMenuPage(String menuItem, String value)
   display.display();
 }
 
-void displayMenuItem(String item, int position, boolean selected)
+void displayMenuItem(String item, int position, boolean selected)   //potrzebne do rysowania elemnetów menu
 {
   if (selected)
   {
@@ -389,7 +353,7 @@ void displayMenuItem(String item, int position, boolean selected)
   display.print("> " + item);
 }
 
-void readRotaryEncoder()
+void readRotaryEncoder()          // ustalenie w ktora strone obraca się encoder
 {
   value += encoder->getValue();
 
@@ -402,6 +366,18 @@ void readRotaryEncoder()
     up = true;
     delay(150);
   }
+}
+int readMenuItem(){
+  if (menuHighlight[0]){
+    return l;
+  }
+  if (menuHighlight[1]){
+    retrun m;
+  }
+  if (menuHighlight[2]){
+    return n;
+  }
+
 }
 
 
