@@ -2,12 +2,12 @@
             ##<><><><><><><><><><><><><><><><><><><><><>##
              +       Arduino Rotary Encoder Menu         +
              +                 v2.0                      +
-             +           by Dominik Maga                 + 
+             +           by Dominik Maga                 +
             ##<><><><><><><><><><><><><><><><><><><><><>##
 */
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <ClickEncoder.h>
+#include <ClickEncoder.h> //usunąć to i zaimplementować ręcznie
 #include <TimerOne.h>
 
 int page = 1;              // ustawienie okna głównego
@@ -308,6 +308,3 @@ int resetValuesLess(int i, int MinValue, int MaxValue) {  // przekręcenie liczn
   }
   return i;
 }
-
-
-
