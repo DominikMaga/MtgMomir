@@ -12,7 +12,7 @@
 
 int menuItemsNum = 6;  //number of items in menu
 
-int menuitem = 1;
+//int menuitem = 1;
 //int frame = 1;
 int page = 1; // dodać więcej page 2,3,4,5 itd dla każdego nowego typu okna
 int lastMenuItem = 1;
@@ -54,8 +54,8 @@ Adafruit_SSD1306 display(OLED_RESET);
 
 void setup() {
 
-  pinMode(7, OUTPUT);
-  turnBacklightOn();
+//  pinMode(7, OUTPUT);
+//  turnBacklightOn();
 
   encoder = new ClickEncoder( A1, A0, A2);
   encoder->setAccelerationEnabled(false);
@@ -88,9 +88,6 @@ void loop() {
     // Początek przesówania menu w dół?
     up = false;
 
-
-
-
     if (menuHighlight[0] && !menuHighlight[1]) {
       menuHighlight[0] = false;
       menuHighlight[1] = true;
@@ -98,7 +95,7 @@ void loop() {
     else if (menuHighlight[1] && !menuHighlight[2]) {
       menuHighlight[1] = false;
       menuHighlight[2] = true;
-      l = resetValuesMore(l, , 0, sizeof(menuItem));
+      l = resetValuesMore(l, 0, sizeof(menuItem));
       m = resetValuesMore(m, 0, sizeof(menuItem));
       n = resetValuesMore(n, 0, sizeof(menuItem));
     }
@@ -107,17 +104,17 @@ void loop() {
   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
     up = false;
     switch (getMenuItem()) {
-      case 1:
-        contast--;
+      case 0:
+        contrast--;
         break;
-      case 2:
+      case 1:
         volume--;
         break;
-      case 3:
+      case 2:
         selectedLanguage--;
-        resetValuesLess(selectedLagnguage, 0, 2);
+        resetValuesLess(selectedLanguage, 0, 2);
         break;
-      case 4:
+      case 3:
         selectedDifficulty--;
         resetValuesLess(selectedDifficulty, 0, 1);
         break;
@@ -139,9 +136,9 @@ void loop() {
     else if (!menuHighlight[0] && menuHighlight[1]) {
       menuHighlight[1] = false;
       menuHighlight[0] = true;
-      l = resetValuesLess(l, 1, sizeof(menuItem));
-      m = resetValuesLess(m, 1, sizeof(menuItem));
-      n = resetValuesLess(n, 1, sizeof(menuItem));
+      l = resetValuesLess(l, 0, sizeof(menuItem));
+      m = resetValuesLess(m, 0, sizeof(menuItem));
+      n = resetValuesLess(n, 0, sizeof(menuItem));
     }
 
 
@@ -151,17 +148,17 @@ void loop() {
   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
     up = false;
     switch (getMenuItem()) {
-      case 1:
-        contast++;
+      case 0:
+        contrast++;
         break;
-      case 2:
+      case 1:
         volume++;
         break;
-      case 3:
+      case 2:
         selectedLanguage++;
-        resetValuesMore(selectedLagnguage, 0, 2);
+        resetValuesMore(selectedLanguage, 0, 2);
         break;
-      case 4:
+      case 3:
         selectedDifficulty++;
         resetValuesMore(selectedDifficulty, 0, 1);
         break;
@@ -176,7 +173,7 @@ void loop() {
     middle = false;
     if (page == 1) {
       switch (getMenuItem()) {
-        case 5:
+        case 4:
           if (backlight) {
             backlight = false;
             setMenuItem("Light: ON");
@@ -186,11 +183,11 @@ void loop() {
             setMenuItem("Light: OFF");
           }
           break;
-        case 6:
+        case 5:
           resetDefaults();
           break;
         default:
-          page = 2
+          page = 2;
                  break;
       }
     } else if (page == 2) {
@@ -202,13 +199,13 @@ void loop() {
 
 //kontrola elementów z poziomu menu
 
-}
+
 
 //////////////////////////////////////////////////Moje
 
 
-void drawMenu_2() {
-  display.setTextSize(1);                     ustawienie wyglądu głównego menu
+void drawMenu(){
+  display.setTextSize(1);                   //  ustawienie wyglądu głównego menu
   display.clearDisplay();
   display.setTextColor(WHITE, BLACK);
   display.setCursor(32, 0);
@@ -216,26 +213,27 @@ void drawMenu_2() {
 
 
 
-  //if(page=1){
-  //display ( item , rozmiar czcionki , podświetlenie )
-  displayMenuItem(menuItem[i], fontPos1, menuHighlight[0]);
-  displayMenuItem(menuItem[j], fontPos2, menuHighlight[1]);
-  displayMenuItem(menuItem[k], fontPos3, menuHighlight[2]);
-  display.display();
-  //} else if(page ==2){
-  switch (getMenuItem()) {
-    case 1:
-      displayIntMenuPage(menuItem[0], contrast);
-      break;
-    case 2:
-      displayIntMenuPage(menuItem[1], volume);
-      break;
-    case 3:
-      displayStringMenuPage(menuItem[2], language[selectedLanguage]);
-      break;
-    case 4:
-      displayStringMenuPage(menuItem[2], difficulty[selectedDifficulty]);
-      break;
+  if (page = 1) {
+    //display ( item , rozmiar czcionki , podświetlenie )
+    displayMenuItem(menuItem[l], fontPos1, menuHighlight[0]);
+    displayMenuItem(menuItem[m], fontPos2, menuHighlight[1]);
+    displayMenuItem(menuItem[n], fontPos3, menuHighlight[2]);
+    display.display();
+  } else if (page == 2) {
+    switch (getMenuItem()) {
+      case 0:
+        displayIntMenuPage(menuItem[0], contrast);
+        break;
+      case 1:
+        displayIntMenuPage(menuItem[1], volume);
+        break;
+      case 2:
+        displayStringMenuPage(menuItem[2], language[selectedLanguage]);
+        break;
+      case 3:
+        displayStringMenuPage(menuItem[3], difficulty[selectedDifficulty]);
+        break;
+    }
   }
 }
 
@@ -301,7 +299,7 @@ void displayMenuItem(String item, int position, boolean selected)   //potrzebne 
     display.setTextColor(WHITE, BLACK);
   }
   display.setCursor(0, position);
-  display.print("•" + item);
+  display.print("• " + item);
 }
 
 void readRotaryEncoder()          // ustalenie w ktora strone obraca się encoder
@@ -318,25 +316,25 @@ void readRotaryEncoder()          // ustalenie w ktora strone obraca się encode
     delay(150);
   }
 }
-void setMenuItem(string a) {
+void setMenuItem(char a) {
 
-  if (menuHighlight[0] {
+  if (menuHighlight[0]) {
   menuItem[l] = a;
   }
-  if (menuHighlight[1] {
+  if (menuHighlight[1]) {
   menuItem[m] = a;
   }
-  if (menuHighlight[2] {
+  if (menuHighlight[2]) {
   menuItem[n] = a;
   }
 
 }
-int getMenuItem() {
+int getMenuItem() {           // zwraca aktualnie wybrany przedmiot w Menu
   if (menuHighlight[0]) {
     return l;
   }
   if (menuHighlight[1]) {
-    retrun m;
+    return m;
   }
   if (menuHighlight[2]) {
     return n;
