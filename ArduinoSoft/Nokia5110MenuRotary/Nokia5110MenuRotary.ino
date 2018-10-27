@@ -114,8 +114,8 @@ void loop() {
       m = resetValuesLess(m, 0, (sizeof(menuItem)/6));
       n = resetValuesLess(n, 0, (sizeof(menuItem)/6));
     }
-  } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder w podmenu
-    up = false;
+  } else if (down && page == 2) {            //kontorla odejmowania wartości przez encoder w podmenu
+    down = false;
     switch (getMenuItem()) {
       case 0:
         contrast++;
@@ -133,6 +133,7 @@ void loop() {
         break;
     }
   }
+
   if (middle) //Middle Button is Pressed               /wcisniecie przycisku enkodera
   {
     middle = false;
@@ -167,7 +168,7 @@ void drawMenu() {
   display.setCursor(32, 0);
   display.print("MtG: Momir");
   //rysowanie glownego menu oraz podmenu
-  if (page = 1) {
+  if (page == 1) {
     //display ( item , rozmiar czcionki , podświetlenie )
     displayMenuItem(menuItem[l], fontPos1, menuHighlight[0]);
     displayMenuItem(menuItem[m], fontPos2, menuHighlight[1]);
