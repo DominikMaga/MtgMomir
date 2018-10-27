@@ -16,14 +16,14 @@ int fontPos2 = 16;
 int fontPos3 = 24;
 int l = 0, m = 1, n = 2; //zmienne potrzebne do ustalenia wyświetlania przedmiotów w menu
 
-String menuItem[6] = {"Contrast", "Volmue", "Language", "Difficulty", "Light: ON", "Reset"};        // lista przedmiotow w menu
+String menuItem[6] = {"Mana cost", "a", "b", "c", "d", "Format"};        // lista przedmiotow w menu
 
 bool menuHighlight[3] = { 1, 0, 0 };
 boolean backlight = true;
-int contrast = 60;
+int manaCost = 0;
 int volume = 50;
 
-String language[3] = { "EN", "ES", "EL" };
+String language[4] = { "Standard", "Pauper", "Full Momir", "Pauper Momir" };
 int selectedLanguage = 0;
 
 String difficulty[2] = { "EASY", "HARD" };
@@ -113,14 +113,14 @@ void loop() {
     up = false;
     switch (getMenuItem()) {
       case 0:
-        contrast--;
+        manaCost--;
         break;
       case 1:
         volume--;
         break;
       case 2:
 //        selectedLanguage--;
-        selectedLanguage=resetValuesLess(selectedLanguage, 0, 2);
+        selectedLanguage=resetValuesLess(selectedLanguage, 0, 3);
         break;
       case 3:
 //        selectedDifficulty--;
@@ -148,14 +148,14 @@ void loop() {
     down = false;
     switch (getMenuItem()) {
       case 0:
-        contrast++;
+        manaCost=resetValuesMore(manaCost, 0, 16);
         break;
       case 1:
         volume++;
         break;
       case 2:
 //        selectedLanguage++;
-        selectedLanguage=resetValuesMore(selectedLanguage, 0, 2);
+        selectedLanguage=resetValuesMore(selectedLanguage, 0, 3);
         break;
       case 3:
 //        selectedDifficulty++;
@@ -182,7 +182,7 @@ void drawMenu() {
   } else if (page == 2) {
     switch (getMenuItem()) {
       case 0:
-        displayIntMenuPage(menuItem[0], contrast);
+        displayIntMenuPage(menuItem[0], manaCost);
         break;
       case 1:
         displayIntMenuPage(menuItem[1], volume);
@@ -200,11 +200,11 @@ void drawMenu() {
 
 void resetDefaults()            // przywrócenie wartosci domyslnych (raczej nie potrzebne)
 {
-  contrast = 60;
+  manaCost = 60;
   volume = 50;
   selectedLanguage = 0;
   selectedDifficulty = 0;
-  //    setContrast();
+  //    setmanaCost();
   backlight = true;
   //    menuItem5 = "Light: ON";
   //  turnBacklightOn();
