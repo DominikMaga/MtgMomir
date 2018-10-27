@@ -1,35 +1,22 @@
-
-//////////////////////////////////////////////
-//       Arduino Rotary Encoder Menu        //
-//                 v1.0                     //
-//           http://www.educ8s.tv           //
-/////////////////////////////////////////////
-
+/*
+            ##<><><><><><><><><><><><><><><><><><><><><>##
+             +       Arduino Rotary Encoder Menu         +
+             +                 v2.0                      +
+             +           by Dominik Maga                 + 
+            ##<><><><><><><><><><><><><><><><><><><><><>##
+*/
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <ClickEncoder.h>
 #include <TimerOne.h>
 
-int menuItemsNum = 6;  //number of items in menu
-
-//int menuitem = 1;
-//int frame = 1;
-int page = 1; // dodać więcej page 2,3,4,5 itd dla każdego nowego typu okna
-int lastMenuItem = 1;
-int fontPos1 = 8;
+int page = 1;              // ustawienie okna głównego
+int fontPos1 = 8;         //kolejne pozycje pixeli na wyświetlaczu
 int fontPos2 = 16;
 int fontPos3 = 24;
-int l = 1, m = 2, n = 3; //variables for changing menuItem
+int l = 1, m = 2, n = 3; //zmienne potrzebne do ustalenia wyświetlania przedmiotów w menu
 
-
-//listed menu items
-char *menuItem[6] = {"Momir", "Standard", "a", "b", "c", "d"};
-//strcpy(menuItem[1], "Momir");
-//strcpy(menuItem[2], "Standard");
-//strcpy(menuItem[3], "??????");
-//strcpy(menuItem[4], "?????!");
-//strcpy(menuItem[5], "!??!??");
-//strcpy(menuItem[6], "?!?!?!");
+char *menuItem[6] = {"Momir", "Standard", "a", "b", "c", "d"};        // lista przedmiotow w menu
 
 bool menuHighlight[3] = { 1, 0, 0 };
 boolean backlight = true;
@@ -54,9 +41,6 @@ Adafruit_SSD1306 display(OLED_RESET);
 
 void setup() {
 
-//  pinMode(7, OUTPUT);
-//  turnBacklightOn();
-
   encoder = new ClickEncoder( A1, A0, A2);
   encoder->setAccelerationEnabled(false);
 
@@ -70,9 +54,7 @@ void setup() {
 }
 
 void loop() {
-
   drawMenu();
-
   readRotaryEncoder();
 
   ClickEncoder::Button b = encoder->getButton();
@@ -83,11 +65,9 @@ void loop() {
         break;
     }
   }
-
   if (up && page == 1 ) {
-    // Początek przesówania menu w dół?
+    // Początek przesówania menu w dół
     up = false;
-
     if (menuHighlight[0] && !menuHighlight[1]) {
       menuHighlight[0] = false;
       menuHighlight[1] = true;
@@ -99,8 +79,6 @@ void loop() {
       m = resetValuesMore(m, 0, sizeof(menuItem));
       n = resetValuesMore(n, 0, sizeof(menuItem));
     }
-
-
   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
     up = false;
     switch (getMenuItem()) {
@@ -118,21 +96,15 @@ void loop() {
         selectedDifficulty--;
         resetValuesLess(selectedDifficulty, 0, 1);
         break;
-
     }
   }
-
-
   if (down && page == 1)                     // Obsługa przesówania menu w górę
   {
-
     down = false;
-
     if (!menuHighlight[1] && menuHighlight[2]) {
       menuHighlight[2] = false;
       menuHighlight[1] = true;
     }
-
     else if (!menuHighlight[0] && menuHighlight[1]) {
       menuHighlight[1] = false;
       menuHighlight[0] = true;
@@ -140,12 +112,7 @@ void loop() {
       m = resetValuesLess(m, 0, sizeof(menuItem));
       n = resetValuesLess(n, 0, sizeof(menuItem));
     }
-
-
-
-    // obsługa odejmowania wartości w innych elementach w menu -- trzeba przerobić na bardziej dynamiczne
-
-  } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
+  } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder w podmenu
     up = false;
     switch (getMenuItem()) {
       case 0:
@@ -162,12 +129,8 @@ void loop() {
         selectedDifficulty++;
         resetValuesMore(selectedDifficulty, 0, 1);
         break;
-
     }
-
   }
-
-
   if (middle) //Middle Button is Pressed               /wcisniecie przycisku enkodera
   {
     middle = false;
@@ -188,31 +151,20 @@ void loop() {
           break;
         default:
           page = 2;
-                 break;
+          break;
       }
     } else if (page == 2) {
       page = 1;
     }
   }
 }
-
-
-//kontrola elementów z poziomu menu
-
-
-
-//////////////////////////////////////////////////Moje
-
-
-void drawMenu(){
+void drawMenu() {
   display.setTextSize(1);                   //  ustawienie wyglądu głównego menu
   display.clearDisplay();
   display.setTextColor(WHITE, BLACK);
   display.setCursor(32, 0);
   display.print("MtG: Momir");
-
-
-
+  //rysowanie glownego menu oraz podmenu
   if (page = 1) {
     //display ( item , rozmiar czcionki , podświetlenie )
     displayMenuItem(menuItem[l], fontPos1, menuHighlight[0]);
@@ -255,7 +207,7 @@ void timerIsr() {                     ////idk chyba potrzebne////
   encoder->service();
 }
 
-void displayIntMenuPage(String menuItem, int value)  ///menu dla kontroli intow
+void displayIntMenuPage(String menuItem, int value)  ///menu dla kontroli int'ow
 {
   display.setTextSize(1);
   display.clearDisplay();
@@ -272,7 +224,7 @@ void displayIntMenuPage(String menuItem, int value)  ///menu dla kontroli intow
   display.display();
 }
 
-void displayStringMenuPage(String menuItem, String value)     // menu do kontroli stringow
+void displayStringMenuPage(String menuItem, String value)     // menu do kontroli stringow np język
 {
   display.setTextSize(1);
   display.clearDisplay();
@@ -316,16 +268,16 @@ void readRotaryEncoder()          // ustalenie w ktora strone obraca się encode
     delay(150);
   }
 }
-void setMenuItem(char a) {
+void setMenuItem(char a) {        // zmienia nazwe przedmiotu w menu
 
   if (menuHighlight[0]) {
-  menuItem[l] = a;
+    menuItem[l] = a;
   }
   if (menuHighlight[1]) {
-  menuItem[m] = a;
+    menuItem[m] = a;
   }
   if (menuHighlight[2]) {
-  menuItem[n] = a;
+    menuItem[n] = a;
   }
 
 }
