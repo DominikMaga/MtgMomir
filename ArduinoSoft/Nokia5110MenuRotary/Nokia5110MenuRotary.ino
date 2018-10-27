@@ -14,9 +14,9 @@ int page = 1;              // ustawienie okna głównego
 int fontPos1 = 8;         //kolejne pozycje pixeli na wyświetlaczu
 int fontPos2 = 16;
 int fontPos3 = 24;
-int l = 1, m = 2, n = 3; //zmienne potrzebne do ustalenia wyświetlania przedmiotów w menu
+int l = 0, m = 1, n = 2; //zmienne potrzebne do ustalenia wyświetlania przedmiotów w menu
 
-char *menuItem[6] = {"Momir", "Standard", "a", "b", "c", "d"};        // lista przedmiotow w menu
+String menuItem[6] = {"Momir", "Standard", "cba", "bcbv", "bcc", "dbcv"};        // lista przedmiotow w menu
 
 bool menuHighlight[3] = { 1, 0, 0 };
 boolean backlight = true;
@@ -75,9 +75,9 @@ void loop() {
     else if (menuHighlight[1] && !menuHighlight[2]) {
       menuHighlight[1] = false;
       menuHighlight[2] = true;
-      l = resetValuesMore(l, 0, sizeof(menuItem));
-      m = resetValuesMore(m, 0, sizeof(menuItem));
-      n = resetValuesMore(n, 0, sizeof(menuItem));
+      l = resetValuesMore(l, 0, (sizeof(menuItem)/6));
+      m = resetValuesMore(m, 0, (sizeof(menuItem)/6));
+      n = resetValuesMore(n, 0, (sizeof(menuItem)/6));
     }
   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
     up = false;
@@ -108,9 +108,9 @@ void loop() {
     else if (!menuHighlight[0] && menuHighlight[1]) {
       menuHighlight[1] = false;
       menuHighlight[0] = true;
-      l = resetValuesLess(l, 0, sizeof(menuItem));
-      m = resetValuesLess(m, 0, sizeof(menuItem));
-      n = resetValuesLess(n, 0, sizeof(menuItem));
+      l = resetValuesLess(l, 0, (sizeof(menuItem)/6));
+      m = resetValuesLess(m, 0, (sizeof(menuItem)/6));
+      n = resetValuesLess(n, 0, (sizeof(menuItem)/6));
     }
   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder w podmenu
     up = false;
@@ -251,7 +251,7 @@ void displayMenuItem(String item, int position, boolean selected)   //potrzebne 
     display.setTextColor(WHITE, BLACK);
   }
   display.setCursor(0, position);
-  display.print("• " + item);
+  display.print("> " + item);
 }
 
 void readRotaryEncoder()          // ustalenie w ktora strone obraca się encoder
@@ -268,7 +268,7 @@ void readRotaryEncoder()          // ustalenie w ktora strone obraca się encode
     delay(150);
   }
 }
-void setMenuItem(char a) {        // zmienia nazwe przedmiotu w menu
+void setMenuItem(String a) {        // zmienia nazwe przedmiotu w menu
 
   if (menuHighlight[0]) {
     menuItem[l] = a;
