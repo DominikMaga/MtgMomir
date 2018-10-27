@@ -98,39 +98,32 @@ void loop() {
     else if (menuHighlight[1] && !menuHighlight[2]) {
       menuHighlight[1] = false;
       menuHighlight[2] = true;
-      l = resetMenuValuesMore(l);
-      m = resetMenuValuesMore(m);
-      n = resetMenuValuesMore(n);
+      l = resetValuesMore(l,,0,sizeof(menuItem));
+      m = resetValuesMore(m,0,sizeof(menuItem));
+      n = resetValuesMore(n,0,sizeof(menuItem));
     }  
 
 
   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
     up = false;
-    switch(readMenuItem){
+    switch(readMenuItem()){
       case 1:
      contast--;
+     break;
+     case 2:
+     volume--;
+     break;
+     case 3:
+     selectedLanguage--;
+     resetValuesLess(selectedLagnguage,0,2);
+     break;
+     case 4:
+      selectedDifficulty--;
+     resetValuesLess(selectedDifficulty,0,1);
+     break;
+
     }
 
-  else if (up && page == 2 && readMenuItem== 2 ) {
-    up = false;
-    volume--;
-  }
-  else if (up && page == 2 && readMenuItem== 3 ) {
-    up = false;
-    selectedLanguage--;
-    if (selectedLanguage == -1)
-    {
-      selectedLanguage = 2;
-    }
-  }
-  else if (up && page == 2 && menuitem == 4 ) {
-    up = false;
-    selectedDifficulty--;
-    if (selectedDifficulty == -1)
-    {
-      selectedDifficulty = 1;
-    }
-  }
 
   if (down && page == 1)                     // Obsługa przesówania menu w górę
   {
@@ -145,14 +138,35 @@ void loop() {
     else if (!menuHighlight[0] && menuHighlight[1]) {
       menuHighlight[1] = false;
       menuHighlight[0] = true;
-      i = resetMenuValuesLess(i);
-      j = resetMenuValuesLess(j);
-      k = resetMenuValuesLess(k);
+      l = resetValuesLess(l,0,sizeof(menuItem));
+      m = resetValuesLess(m,0,sizeof(menuItem));
+      n = resetValuesLess(n,0,sizeof(menuItem));
     }  
 
 
 
           // obsługa odejmowania wartości w innych elementach w menu -- trzeba przerobić na bardziej dynamiczne
+
+   } else if (up && page == 2) {            //kontorla odejmowania wartości przez encoder
+    up = false;
+    switch(readMenuItem()){
+      case 1:
+     contast++;
+     break;
+     case 2:
+     volume++;
+     break;
+     case 3:
+     selectedLanguage++;
+     resetValuesMore(selectedLagnguage,0,2);
+     break;
+     case 4:
+      selectedDifficulty--;
+     resetValuesMore(selectedDifficulty,0,1);
+     break;
+
+    }
+
           
   } else if (down && page == 2 && menuitem == 1) {      
     down = false;
@@ -217,21 +231,7 @@ void loop() {
 }
 //////////////////////////////////////////////////Moje
 
-int resetMenuValuesMore(int i, int MaxValue) { //przekręcenie licznika w górę
-  i += 1;
-  if (i > MaxValue ) {  ///sizeof(menuItem)
-    i = 1;
-  }
-  return i;
-}
 
-int resetMenuValuesLess(int i, int MaxValue) {  // przekręcenie licznika w dół
-  i -= 1;
-  if (i < 1) { //sizeof(menuItem)
-    i = MaxValue;
-  }
-  return i;
-}
 void drawMenu_2() {
   display.setTextSize(1);                     ustawienie wyglądu głównego menu
   display.clearDisplay();
@@ -378,6 +378,21 @@ int readMenuItem(){
     return n;
   }
 
+}
+int resetValuesMore(int i,int MinValue, int MaxValue) { //przekręcenie licznika w górę
+  i += 1;
+  if (i > MaxValue ) {  ///sizeof(menuItem)
+    i = MinValue;
+  }
+  return i;
+}
+
+int resetValuesLess(int i, int MinValue, int MaxValue) {  // przekręcenie licznika w dół
+  i -= 1;
+  if (i < MinValue) { //sizeof(menuItem)
+    i = MaxValue;
+  }
+  return i;
 }
 
 
