@@ -9,6 +9,8 @@
 #include <Adafruit_SSD1306.h>
 #include <ClickEncoder.h>
 #include <TimerOne.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int page = 1;              // ustawienie okna głównego
 int fontPos1 = 8;         //kolejne pozycje pixeli na wyświetlaczu
@@ -41,6 +43,12 @@ Adafruit_SSD1306 display(OLED_RESET);
 
 void setup() {
   Serial.begin(9600);
+
+  //random kradziony
+  pinMode(13, OUTPUT); // signal ready to go and then wait a bit
+  digitalWrite(13, HIGH);
+  delay(2000);
+
   encoder = new ClickEncoder( A1, A0, A2);
   encoder->setAccelerationEnabled(false);
 
@@ -54,6 +62,20 @@ void setup() {
 }
 
 void loop() {
+
+  //kradziony random
+  unsigned long seed=seedOut(31); // create 31 bit seed and show value, random results
+  randomSeed(seed);
+
+  /*Serial.print(" random (1-99) = ");
+  for (int i=0;i<20;++i)
+  {
+    Serial.print(random(1,100));
+    Serial.print(" ");
+  }
+  Serial.print('n');
+  */
+
   drawMenu();
   readRotaryEncoder();
 
@@ -314,4 +336,36 @@ int resetValuesLess(int i, int MinValue, int MaxValue) {  // przekręcenie liczn
     i = MaxValue;
   }
   return i;
+}
+
+unsigned int bitOut(void)
+{
+  static unsigned long firstTime=1, prev=0;
+  unsigned long bit1=0, bit0=0, x=0, port=0, limit=99;
+  if (firstTime)
+  {
+    firstTime=0;
+    prev=analogRead(port);
+  }
+  while (limit--)
+  {
+    x=analogRead(port);
+    bit1=(prev!=x?1:0);
+    prev=x;
+    x=analogRead(port);
+    bit0=(prev!=x?1:0);
+    prev=x;
+    if (bit1!=bit0)
+      break;
+  }
+  return bit1;
+}
+
+unsigned long seedOut(unsigned int noOfBits)
+{
+  // return value with 'noOfBits' random bits set
+  unsigned long seed=0;
+  for (int i=0;i<noOfBits;++i)
+    seed = (seed<<1) | bitOut();
+  return seed;
 }
