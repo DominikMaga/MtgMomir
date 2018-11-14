@@ -16,15 +16,15 @@ int fontPos2 = 16;
 int fontPos3 = 24;
 int l = 0, m = 1, n = 2; //zmienne potrzebne do ustalenia wyświetlania przedmiotów w menu
 
-String menuItem[6] = {"Mana cost", "a", "b", "c", "d", "Format"};        // lista przedmiotow w menu
+String menuItem[6] = {"Mana cost", "Vol", "Format", "ON/OFF", "reset", "???"};        // lista przedmiotow w menu
 
 bool menuHighlight[3] = { 1, 0, 0 };
-boolean backlight = true;
+boolean backlight = true; //czy to potrzebne?
 int manaCost = 0;
 int volume = 50;
 
-String language[4] = { "Standard", "Pauper", "Full Momir", "Pauper Momir" };
-int selectedLanguage = 0;
+String standard[4] = { "Standard", "Pauper", "Full Momir", "Pauper Momir" };
+int selectedStandard = 0;
 
 String difficulty[2] = { "EASY", "HARD" };
 int selectedDifficulty = 0;
@@ -119,8 +119,8 @@ void loop() {
         volume--;
         break;
       case 2:
-//        selectedLanguage--;
-        selectedLanguage=resetValuesLess(selectedLanguage, 0, 3);
+//        selectedStandard--;
+        selectedStandard=resetValuesLess(selectedStandard, 0, 3);
         break;
       case 3:
 //        selectedDifficulty--;
@@ -150,12 +150,12 @@ void loop() {
       case 0:
         manaCost=resetValuesMore(manaCost, 0, 16);
         break;
-      case 1:
+      case 1: // co z tym zrobić?
         volume++;
         break;
       case 2:
-//        selectedLanguage++;
-        selectedLanguage=resetValuesMore(selectedLanguage, 0, 3);
+//        selectedStandard++;
+        selectedStandard=resetValuesMore(selectedStandard, 0, 3);
         break;
       case 3:
 //        selectedDifficulty++;
@@ -188,7 +188,7 @@ void drawMenu() {
         displayIntMenuPage(menuItem[1], volume);
         break;
       case 2:
-        displayStringMenuPage(menuItem[2], language[selectedLanguage]);
+        displayStringMenuPage(menuItem[2], standard[selectedStandard]);
         break;
       case 3:
         displayStringMenuPage(menuItem[3], difficulty[selectedDifficulty]);
@@ -200,17 +200,15 @@ void drawMenu() {
 
 void resetDefaults()            // przywrócenie wartosci domyslnych (raczej nie potrzebne)
 {
-  manaCost = 60;
+  manaCost = 0;
   volume = 50;
-  selectedLanguage = 0;
+  selectedStandard = 0;
   selectedDifficulty = 0;
   //    setmanaCost();
   backlight = true;
   //    menuItem5 = "Light: ON";
   //  turnBacklightOn();
 }
-
-
 
 void timerIsr() {                     ////idk chyba potrzebne////
   encoder->service();
@@ -243,8 +241,8 @@ void displayStringMenuPage(String menuItem, String value)     // menu do kontrol
   display.drawFastHLine(0, 10, 83, BLACK);
   display.setCursor(5, 15);
   display.print("Value");
-  display.setTextSize(2);
-  display.setCursor(40, 8);
+  display.setTextSize(1);     //DOPRACOWAĆ
+  display.setCursor(40, 8);   //
   display.print(value);
   display.setTextSize(2);
   display.display();
