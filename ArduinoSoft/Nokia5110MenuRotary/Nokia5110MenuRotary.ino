@@ -369,3 +369,30 @@ unsigned long seedOut(unsigned int noOfBits)
     seed = (seed<<1) | bitOut();
   return seed;
 }
+
+void printDirectory(File dir, int numTabs) { //TODO
+  while (true) {
+
+    File entry =  dir.openNextFile();
+    if (! entry) {
+      // no more files
+      break;
+    }
+    for (uint8_t i = 0; i < numTabs; i++) {
+      Serial.print('\t');
+    }
+    Serial.print(entry.name());
+    if (entry.isDirectory()) {
+      Serial.println("/");
+      printDirectory(entry, numTabs + 1);
+    } else {
+      // files have sizes, directories do not
+      Serial.print("\t\t");
+      Serial.println(entry.size(), DEC);
+      n_files++;
+    }
+    
+    entry.close();
+  }
+  Serial.println(n_files);
+}
