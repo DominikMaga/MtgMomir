@@ -370,7 +370,7 @@ unsigned long seedOut(unsigned int noOfBits)
   return seed;
 }
 
-void printDirectory(File dir, int numTabs) { //TODO
+void printDirectory(File dir) {
   while (true) {
 
     File entry =  dir.openNextFile();
@@ -378,17 +378,7 @@ void printDirectory(File dir, int numTabs) { //TODO
       // no more files
       break;
     }
-    for (uint8_t i = 0; i < numTabs; i++) {
-      Serial.print('\t');
-    }
-    Serial.print(entry.name());
-    if (entry.isDirectory()) {
-      Serial.println("/");
-      printDirectory(entry, numTabs + 1);
-    } else {
-      // files have sizes, directories do not
-      Serial.print("\t\t");
-      Serial.println(entry.size(), DEC);
+    if (!entry.isDirectory()) {
       n_files++;
     }
     
