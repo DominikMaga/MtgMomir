@@ -1,17 +1,16 @@
 #include <SPI.h>
-
 #include <SD.h>
 
 Sd2Card card;
 SdVolume volume;
 SdFile root;
 const int chipSelect = 4;
-
+String directory="/1/";
 int n_files;
-
+String nm;
 void setup() {
   Serial.begin(9600);
-  
+  randomSeed(analogRead(0));
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
@@ -33,38 +32,32 @@ void setup() {
     Serial.println("Wiring is correct and a card is present.");
   }
 
-  n_files = countNumFiles(SD.open("/1/"));
+  n_files = countNumFiles(SD.open(directory));
   Serial.print("Number of MP3 files: "); Serial.println(n_files);
 }
 
 void loop() {
-  int i, rand_song;
-  String directory;
-  File chosen_rand;
-  if( Serial.available() > 0 ){
-    for( i=0; i<10; i++ ){
-      directory = Serial.readString();
-    }
-  }
+  int i, rand_photo;
   File folder = SD.open(directory);
   File random_file;
-  rand_song = random(0, n_files)+1;
-  chosen_rand = selectFileN(rand_song, folder);
-  if(chosen_rand)
-  //  Serial.print("Random file name: "); Serial.println(chosen_rand.name());
+  rand_photo = random(0, n_files)+1;
+  random_file = selectFileN(rand_photo, folder);
+//  Serial.print("Random: ");Serial.print(rand_photo);
+  if(random_file)
+  nm = random_file.name();
+  Serial.print("Random file name: "); Serial.println(nm);
   folder.rewindDirectory();  
   folder.close();
   random_file.close();
 
-  delay(1000);
+  delay(100);
 }
 
 int countNumFiles(File dir) {
   while (true) {
 
     File entry =  dir.openNextFile();
-    if (! entry) {
-      // no more files
+    if (! entry) { // no more files
       entry.rewindDirectory();
       break;
     }
@@ -74,7 +67,6 @@ int countNumFiles(File dir) {
     
     entry.close();
   }
-  Serial.println(n_files);
 
   return n_files;
 }
@@ -92,7 +84,6 @@ File selectFileN(int number, File dir)
       dir.rewindDirectory();
       break;
     }
-    Serial.println(entry.name());
     if(entry.name() != NULL)
       counter++;
     if(counter==number)
