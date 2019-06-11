@@ -14,15 +14,16 @@
 
 int page = 1;              // ustawienie okna głównego
 int fontPos1 = 8;         //kolejne pozycje pixeli na wyświetlaczu
-int fontPos2 = 16;
+int fontPos2 = 16;        // _____ do konstruktora
 int fontPos3 = 24;
 int l = 0, m = 1, n = 2; //zmienne potrzebne do ustalenia wyświetlania przedmiotów w menu
 
-String menuItem[6] = {"Mana cost", "Vol", "Format", "ON/OFF", "reset", "???"};        // lista przedmiotow w menu
+String menuItem[6] = {"Mana cost", "Vol", "Format", "ON/OFF", "reset", "Print"};        // lista przedmiotow w menu
+//____ jako tworzenie obiektu menuItem
 
 bool menuHighlight[3] = { 1, 0, 0 };
 boolean backlight = true; //czy to potrzebne?
-int manaCost = 0;
+int manaCost = 0;//ustawienie wartości dla zmiennych  
 int volume = 50;
 
 String standard[4] = { "Standard", "Pauper", "Full Momir", "Pauper Momir" };
@@ -370,19 +371,23 @@ unsigned long seedOut(unsigned int noOfBits)
   return seed;
 }
 
-void printDirectory(File dir) {
-  while (true) {
-
-    File entry =  dir.openNextFile();
-    if (! entry) {
-      // no more files
-      break;
-    }
-    if (!entry.isDirectory()) {
-      n_files++;
-    }
-    
-    entry.close();
-  }
-  Serial.println(n_files);
+//void printDirectory(File dir) {
+//  while (true) {
+//
+//    File entry =  dir.openNextFile();
+//    if (! entry) {
+//      // no more files
+//      break;
+//    }
+//    if (!entry.isDirectory()) {
+//      n_files++;
+//    }
+//    
+//    entry.close();
+//  }
+//  Serial.println(n_files);
+//}
+void display ()override{
+  memset(buffer, 0, WIDTH * ((HEIGHT + 7) / 8));
+}
 }
